@@ -23,9 +23,22 @@ function App() {
   const canvasRef = useRef(null)
   const gameLoopRef = useRef(null)
   const pipeIdCounter = useRef(0)
+  const playerImageRef = useRef(null)
 
   const PLAYER_SIZE = 60
   const PLAYER_X = 150
+
+  // Load sister's image
+  useEffect(() => {
+    const img = new Image()
+    img.src = '/sister-face.png'
+    img.onload = () => {
+      playerImageRef.current = img
+    }
+    img.onerror = () => {
+      console.log('Sister image not found, using placeholder')
+    }
+  }, [])
 
   // Start game
   const startGame = () => {
@@ -194,28 +207,42 @@ function App() {
       })
 
       // Draw player (sister's face or placeholder)
-      ctx.fillStyle = '#FFD700'
-      ctx.strokeStyle = '#FFA500'
-      ctx.lineWidth = 3
+      if (playerImageRef.current) {
+        // Draw sister's image
+        ctx.save()
+        ctx.drawImage(
+          playerImageRef.current,
+          PLAYER_X,
+          playerY,
+          PLAYER_SIZE,
+          PLAYER_SIZE
+        )
+        ctx.restore()
+      } else {
+        // Fallback to placeholder circle
+        ctx.fillStyle = '#FFD700'
+        ctx.strokeStyle = '#FFA500'
+        ctx.lineWidth = 3
 
-      // Circle for face placeholder
-      ctx.beginPath()
-      ctx.arc(PLAYER_X + PLAYER_SIZE / 2, playerY + PLAYER_SIZE / 2, PLAYER_SIZE / 2, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.stroke()
+        // Circle for face placeholder
+        ctx.beginPath()
+        ctx.arc(PLAYER_X + PLAYER_SIZE / 2, playerY + PLAYER_SIZE / 2, PLAYER_SIZE / 2, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.stroke()
 
-      // Cute face
-      ctx.fillStyle = '#333'
-      // Eyes
-      ctx.beginPath()
-      ctx.arc(PLAYER_X + 20, playerY + 20, 4, 0, Math.PI * 2)
-      ctx.arc(PLAYER_X + 40, playerY + 20, 4, 0, Math.PI * 2)
-      ctx.fill()
+        // Cute face
+        ctx.fillStyle = '#333'
+        // Eyes
+        ctx.beginPath()
+        ctx.arc(PLAYER_X + 20, playerY + 20, 4, 0, Math.PI * 2)
+        ctx.arc(PLAYER_X + 40, playerY + 20, 4, 0, Math.PI * 2)
+        ctx.fill()
 
-      // Smile
-      ctx.beginPath()
-      ctx.arc(PLAYER_X + 30, playerY + 25, 15, 0, Math.PI)
-      ctx.stroke()
+        // Smile
+        ctx.beginPath()
+        ctx.arc(PLAYER_X + 30, playerY + 25, 15, 0, Math.PI)
+        ctx.stroke()
+      }
 
       // Score
       ctx.fillStyle = '#FF1493'
